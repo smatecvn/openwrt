@@ -1,0 +1,10 @@
+
+uci -q batch <<-EOF >/dev/null
+	set network.lan.ipaddr='192.168.1.199'
+	set network.lan.gateway='192.168.1.1'
+	set network.lan.dns='8.8.8.8 8.8.4.4'
+	set network.lan.netmask='255.255.255.0'
+EOF
+
+exit 0
+

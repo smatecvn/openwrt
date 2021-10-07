@@ -135,6 +135,8 @@ struct wm8960_priv {
 	struct wm8960_data pdata;
 };
 
+static char init_mtk;
+
 #define wm8960_reset(c)	regmap_write(c, WM8960_RESET, 0)
 
 /* enumerated controls */
@@ -215,6 +217,49 @@ static int wm8960_put_deemph(struct snd_kcontrol *kcontrol,
 	wm8960->deemph = deemph;
 
 	return wm8960_set_deemph(component);
+}
+
+static int wm8960_init(struct snd_soc_component *component)
+{
+	u32 data;
+	// In
+	data = snd_soc_component_read32(component, WM8960_POWER1);
+	snd_soc_component_write(component, WM8960_POWER1, data|WM8960_PWR1_ADCL|WM8960_PWR1_ADCR|WM8960_PWR1_AINL |WM8960_PWR1_AINR|WM8960_PWR1_MICB|WM8960_PWR1_VMIDSEL_5K|WM8960_PWR1_VREF);//0x19
+	data = snd_soc_component_read32(component, WM8960_ADDCTL1);
+	snd_soc_component_write(component, WM8960_ADDCTL1, data|ADDITIONAL1_DATSEL(0x01));//0x17
+	snd_soc_component_write(component, WM8960_LADC, LEFTGAIN_LDVU|LEFTGAIN_LDACVOL(0xce));//0x15
+	snd_soc_component_write(component, WM8960_RADC, LEFTGAIN_LDVU|LEFTGAIN_LDACVOL(0xce));//0x16
+	snd_soc_component_write(component, WM8960_LINPATH, 0x168);//0x20
+	snd_soc_component_write(component, WM8960_RINPATH, 0x168);//0x21
+	snd_soc_component_write(component, WM8960_POWER3, WM8960_PWR3_LMIC|WM8960_PWR3_RMIC|WM8960_PWR3_ROMIX|WM8960_PWR3_LOMIX);//0x2f
+
+	//Out
+	data = snd_soc_component_read32(component, WM8960_POWER2);
+	snd_soc_component_write(component, WM8960_POWER2, data|WM8960_PWR2_DACL|WM8960_PWR2_DACR|WM8960_PWR2_LOUT1|WM8960_PWR2_ROUT1|WM8960_PWR2_SPKL|WM8960_PWR2_SPKR);//0x1a
+	mdelay(10);
+	snd_soc_component_write(component, WM8960_IFACE2, 0x40);
+	snd_soc_component_write(component, WM8960_LDAC, LEFTGAIN_LDVU|LEFTGAIN_LDACVOL(0xff));//0x0a
+	snd_soc_component_write(component, WM8960_RDAC, RIGHTGAIN_RDVU|RIGHTGAIN_RDACVOL(0xff));//0x0b
+	snd_soc_component_write(component, WM8960_LOUTMIX, 0x100);//0x22
+	snd_soc_component_write(component, WM8960_ROUTMIX, 0x100);//0x25
+
+	snd_soc_component_write(component, WM8960_CLASSD1, 0xf7);//0x31
+	snd_soc_component_write(component, WM8960_CLASSD3, 0xad);//0x33
+	snd_soc_component_write(component, WM8960_DACCTL1,  0x000);//0x05
+
+	snd_soc_component_write(component, WM8960_LOUT1, LOUT1_LO1VU|LOUT1_LO1ZC|LOUT1_LOUT1VOL(120));//0x02
+	snd_soc_component_write(component, WM8960_ROUT1, ROUT1_RO1VU|ROUT1_RO1ZC|ROUT1_ROUT1VOL(120));//0x03
+	
+	data = snd_soc_component_read32(component, WM8960_LINVOL);
+	data &= ~LINV_LINMUTE;
+	snd_soc_component_write(component, WM8960_LINVOL, data|LINV_IPVU|LINV_LINVOL(96));//LINV(0x00)
+	
+	data = snd_soc_component_read32(component, WM8960_RINVOL);
+	data &= ~RINV_RINMUTE;
+	snd_soc_component_write(component, WM8960_RINVOL, data|RINV_IPVU|RINV_RINVOL(96)); //LINV(0x01)
+
+	init_mtk = true;
+	return 0;
 }
 
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -9750, 50, 1);
@@ -968,6 +1013,9 @@ static int wm8960_set_bias_level_out3(struct snd_soc_component *component,
 
 		/* Set VMID to 2x250k */
 		snd_soc_component_update_bits(component, WM8960_POWER1, 0x180, 0x100);
+
+		wm8960_init(component);
+
 		break;
 
 	case SND_SOC_BIAS_OFF:

@@ -343,17 +343,20 @@ mtk_add_pin(mraa_board_t *b, int index, int pin, const char *name, int mux,
             mraa_boolean_t fast_gpio, mraa_boolean_t spi, mraa_boolean_t i2c,
             mraa_boolean_t aio, mraa_boolean_t uart)
 {
-    strncpy(b->pins[index].name, name, MRAA_PIN_NAME_SIZE);
-    b->pins[index].gpio.pinmap = pin;
+    int idx;
+    idx = pin;
+
+    strncpy(b->pins[idx].name, name, MRAA_PIN_NAME_SIZE);
+    b->pins[idx].gpio.pinmap = pin;
     gpio_mux_groups[pin] = mux;
-    b->pins[index].capabilities.valid = valid;
-    b->pins[index].capabilities.gpio = gpio;
-    b->pins[index].capabilities.pwm = pwm;
-    b->pins[index].capabilities.fast_gpio = fast_gpio;
-    b->pins[index].capabilities.spi = spi;
-    b->pins[index].capabilities.i2c = i2c;
-    b->pins[index].capabilities.aio = aio;
-    b->pins[index].capabilities.uart = uart;
+    b->pins[idx].capabilities.valid = valid;
+    b->pins[idx].capabilities.gpio = gpio;
+    b->pins[idx].capabilities.pwm = pwm;
+    b->pins[idx].capabilities.fast_gpio = fast_gpio;
+    b->pins[idx].capabilities.spi = spi;
+    b->pins[idx].capabilities.i2c = i2c;
+    b->pins[idx].capabilities.aio = aio;
+    b->pins[idx].capabilities.uart = uart;
     if (gpio) {
         b->gpio_count++;
     }
@@ -453,7 +456,7 @@ mtk_common(char *name, int pin_count)
 mraa_board_t *
 mraa_mtk_linkit()
 {
-    mraa_board_t *b = mtk_common("LinkIt Smart 7688", 32);
+    mraa_board_t *b = mtk_common("Mira Audio Encoder", 96);
     if (b == NULL) {
         return NULL;
     }
@@ -503,6 +506,11 @@ mraa_mtk_linkit()
     mtk_add_pin(b, 29, 16, "GPIO16",   MUX_SPI_S,   1, 1, 0, 0, 0, 0, 0, 0);
     mtk_add_pin(b, 30, 15, "GPIO15",   MUX_SPI_S,   1, 1, 0, 0, 0, 0, 0, 0);
     mtk_add_pin(b, 31, 14, "GPIO14",   MUX_SPI_S,   1, 1, 0, 0, 0, 0, 0, 0);
+    
+    mtk_add_pin(b, 32, 40, "GPIO40",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
+    mtk_add_pin(b, 33, 41, "GPIO41",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
+    mtk_add_pin(b, 34, 42, "GPIO42",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
+    mtk_add_pin(b, 35, 11, "GPIO11",   MUX_GPIO,    1, 1, 0, 0, 0, 0, 0, 0);
 
     //
     // UARTs

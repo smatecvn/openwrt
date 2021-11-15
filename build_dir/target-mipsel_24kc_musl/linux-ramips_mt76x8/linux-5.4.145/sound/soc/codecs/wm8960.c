@@ -226,7 +226,8 @@ static int wm8960_init(struct snd_soc_component *component)
 	data = snd_soc_component_read32(component, WM8960_POWER1);
 	snd_soc_component_write(component, WM8960_POWER1, data|WM8960_PWR1_ADCL|WM8960_PWR1_ADCR|WM8960_PWR1_AINL |WM8960_PWR1_AINR|WM8960_PWR1_MICB|WM8960_PWR1_VMIDSEL_5K|WM8960_PWR1_VREF);//0x19
 	data = snd_soc_component_read32(component, WM8960_ADDCTL1);
-	snd_soc_component_write(component, WM8960_ADDCTL1, data|ADDITIONAL1_DATSEL(0x01));//0x17
+	//snd_soc_component_write(component, WM8960_ADDCTL1, data|ADDITIONAL1_DATSEL(0x01));//0x17
+	snd_soc_component_write(component, WM8960_ADDCTL1, data|ADDITIONAL1_DATSEL(0x00));//0x17 Stereo Mode
 	snd_soc_component_write(component, WM8960_LADC, LEFTGAIN_LDVU|LEFTGAIN_LDACVOL(0xce));//0x15
 	snd_soc_component_write(component, WM8960_RADC, LEFTGAIN_LDVU|LEFTGAIN_LDACVOL(0xce));//0x16
 	snd_soc_component_write(component, WM8960_LINPATH, 0x168);//0x20

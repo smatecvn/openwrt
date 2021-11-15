@@ -4,6 +4,7 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 	compatible = "mediatek,mt7628an-soc";
+	//compatible = "ralink,mt7620a-soc";
 
 	aliases {
 		serial0 = &uartlite;
@@ -83,29 +84,22 @@
 			interrupts = <3>;
 		};
 
-		//gpio: gpio@600 {
-		//	compatible = "mediatek,mt7621-gpio";
-		//	reg = <0x600 0x100>;
-
-		//	interrupt-parent = <&intc>;
-		//	interrupts = <6>;
-
-		//	#interrupt-cells = <2>;
-		//	interrupt-controller;
-
-		//	gpio-controller;
-		//	#gpio-cells = <2>;
-		//};
-		
-		gpio@600 {
-			#address-cells = <1>;
-			#size-cells = <0>;
+		gpio: gpio@600 {
+		 	#address-cells = <1>;
+		 	#size-cells = <0>;
 
 			compatible = "mtk,mt7628-gpio", "mtk,mt7621-gpio";
+			
 			reg = <0x600 0x100>;
 
 			interrupt-parent = <&intc>;
 			interrupts = <6>;
+
+			#interrupt-cells = <2>;
+			interrupt-controller;
+
+			gpio-controller;
+			#gpio-cells = <2>;
 
 			gpio0: bank@0 {
 				reg = <0>;
@@ -128,6 +122,33 @@
 				#gpio-cells = <2>;
 			};
 		};
+		
+		// gpio: gpio@600 {
+		// 	#address-cells = <1>;
+		// 	#size-cells = <0>;
+
+		// 	//compatible = "ralink,rt2880-gpio", "mediatek,mt7621-gpio" ;
+		// 	compatible = "ralink,rt2880-gpio";
+		// 	//reg = <0x600 0x100>;
+		// 	reg = <0x600 0x34>;
+		// 	//resets = <&rstctrl 13>;
+		// 	//reset-names = "pio";
+
+		// 	interrupt-parent = <&intc>;
+		// 	interrupts = <6>;
+
+		// 	#interrupt-cells = <2>;
+		// 	interrupt-controller;
+
+		// 	gpio-controller;
+		// 	#gpio-cells = <2>;
+
+		// 	ngpios = <24>;
+		// 	ralink,gpio-base = <0>;
+		// 	ralink,register-map = [ 00 04 08 0c
+		// 				20 24 28 2c
+		// 				30 34 ];
+		// };
 
 		i2c: i2c@900 {
 			compatible = "mediatek,mt7621-i2c";

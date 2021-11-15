@@ -503,6 +503,10 @@ static void option_instat_callback(struct urb *urb);
 #define YUGA_PRODUCT_CLU528			0x360D
 #define YUGA_PRODUCT_CLU526			0x360F
 
+/* YUGA products */
+#define YUGA_VENDOR_AC5				0x1286
+#define YUGA_PRODUCT_AC5			0x4E3C
+
 /* Viettel products */
 #define VIETTEL_VENDOR_ID			0x2262
 #define VIETTEL_PRODUCT_VT1000			0x0002
@@ -1994,6 +1998,7 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CWU581) },
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CWU582) },
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CWU583) },
+	{ USB_DEVICE(YUGA_VENDOR_AC5, YUGA_PRODUCT_AC5) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(VIETTEL_VENDOR_ID, VIETTEL_PRODUCT_VT1000, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZD_VENDOR_ID, ZD_PRODUCT_7000, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE(LG_VENDOR_ID, LG_PRODUCT_L02C) }, /* docomo L-02C modem */
@@ -2139,6 +2144,21 @@ static int option_probe(struct usb_serial *serial,
 	struct usb_interface_descriptor *iface_desc =
 				&serial->interface->cur_altsetting->desc;
 	unsigned long device_flags = id->driver_info;
+
+	struct usb_wwan_intf_private *data;
+	struct usb_device_descriptor *dev_desc = &serial->dev->descriptor;
+
+	if (serial->dev->descriptor.idVendor == YUGA_VENDOR_AC5 &&
+		serial->dev->descriptor.idProduct == YUGA_PRODUCT_AC5) {
+		if (serial->interface->cur_altsetting->desc.bInterfaceNumber == 0
+		 || serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)
+		return -ENODEV;
+	}
+
+	//if (dev_desc->idVendor == cpu_to_le16(YUGA_VENDOR_AC5) &&
+	//	dev_desc->idProduct == cpu_to_le16(YUGA_PRODUCT_AC5) &&
+	//	iface_desc->bInterfaceClass != USB_CLASS_CDC_DATA)
+	//	return -ENODEV;
 
 	/* Never bind to the CD-Rom emulation interface	*/
 	if (iface_desc->bInterfaceClass == USB_CLASS_MASS_STORAGE)

@@ -21,7 +21,7 @@ mraa_mips_platform()
     if (fh != NULL) {
         while (getline(&line, &len, fh) != -1) {
             if (strncmp(line, "machine", 7) == 0) {
-                //if (strstr(line, "MediaTek LinkIt Smart 7688")) {xxx
+                //if (strstr(line, "MediaTek LinkIt Smart 7688")) {
                 if (strstr(line, "Mira Audio Encoder")) {
                     platform_type = MRAA_MIRA_PLATFORM;
                 }

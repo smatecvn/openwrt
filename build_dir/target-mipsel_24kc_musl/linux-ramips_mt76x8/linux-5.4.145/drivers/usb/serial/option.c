@@ -507,9 +507,21 @@ static void option_instat_callback(struct urb *urb);
 #define YUGA_VENDOR_AC5				0x1286
 #define YUGA_PRODUCT_AC5			0x4E3C
 
+/* N720 NEOWAY products */
+#define N720_VENDOR_ID				0x2949
+#define N720_PRODUCT_ID				0x8247
+
+/* L501 LYNQ products */
+#define L501_VENDOR_ID				0x1286
+#define L501_PRODUCT_ID				0x4E3D
+
+/* EC200S-CN QUECTEL products */
+#define EC200S_CN_VENDOR_ID			0x2c7c
+#define EC200S_CN_PRODUCT_ID		0x6002
+
 /* Viettel products */
 #define VIETTEL_VENDOR_ID			0x2262
-#define VIETTEL_PRODUCT_VT1000			0x0002
+#define VIETTEL_PRODUCT_VT1000		0x0002
 
 /* ZD Incorporated */
 #define ZD_VENDOR_ID				0x0685
@@ -1999,6 +2011,8 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CWU582) },
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CWU583) },
 	{ USB_DEVICE(YUGA_VENDOR_AC5, YUGA_PRODUCT_AC5) },
+	{ USB_DEVICE(N720_VENDOR_ID, N720_PRODUCT_ID) },
+	{ USB_DEVICE(EC200S_CN_VENDOR_ID, EC200S_CN_PRODUCT_ID) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(VIETTEL_VENDOR_ID, VIETTEL_PRODUCT_VT1000, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZD_VENDOR_ID, ZD_PRODUCT_7000, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE(LG_VENDOR_ID, LG_PRODUCT_L02C) }, /* docomo L-02C modem */
@@ -2121,6 +2135,9 @@ static struct usb_serial_driver option_1port_device = {
 #ifdef CONFIG_PM
 	.suspend           = usb_wwan_suspend,
 	.resume            = usb_wwan_resume,
+	#if 1 //Added by Quectel
+	.reset_resume = usb_wwan_resume,
+	#endif
 #endif
 };
 
@@ -2154,7 +2171,19 @@ static int option_probe(struct usb_serial *serial,
 		 || serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)
 		return -ENODEV;
 	}
-
+// #if 1 //Added by Quectel
+// 	//Quectel modules’s interface 4 can be used as USB network device
+// 	if (serial->dev->descriptor.idVendor == cpu_to_le16(0x2C7C)) {
+// 		//some interfaces can be used as USB Network device (ecm, rndis, mbim)
+// 		if (serial->interface->cur_altsetting->desc.bInterfaceClass != 0xFF) {
+// 			return -ENODEV;
+// 		}
+// 		//interface 4 can be used as USB Network device (qmi)
+// 		else if (serial->interface->cur_altsetting->desc.bInterfaceNumber >= 4) {
+// 			return -ENODEV;
+// 		}
+// 	}
+// #endif
 	//if (dev_desc->idVendor == cpu_to_le16(YUGA_VENDOR_AC5) &&
 	//	dev_desc->idProduct == cpu_to_le16(YUGA_PRODUCT_AC5) &&
 	//	iface_desc->bInterfaceClass != USB_CLASS_CDC_DATA)

@@ -510,7 +510,9 @@ mraa_mtk_linkit()
     mtk_add_pin(b, 32, 40, "GPIO40",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
     mtk_add_pin(b, 33, 41, "GPIO41",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
     mtk_add_pin(b, 34, 42, "GPIO42",   MUX_EPHY,    1, 1, 0, 0, 0, 0, 0, 0);
-    mtk_add_pin(b, 35, 11, "GPIO11",   MUX_GPIO,    1, 1, 0, 0, 0, 0, 0, 0);
+    mtk_add_pin(b, 35, 11, "GPIO11",   MUX_GPIO,    1, 1, 0, 0, 0, 0, 0, 0);//Z-RESETn
+    mtk_add_pin(b, 36, 36, "GPIO36",   MUX_GPIO,    1, 1, 0, 0, 0, 0, 0, 0);//4G-RESET
+
 
     //
     // UARTs
